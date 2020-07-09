@@ -16,10 +16,6 @@ google-auth==1.15.0
 google-auth-oauthlib==0.4.1
 google-pasta==0.2.0
 gunicorn
-gcc
-python-setuptools
-python-devel
-postgresql-devel
 jupyter==1.0.
 marshmallow==3.6.0
 marshmallow-sqlalchemy==0.23.0
