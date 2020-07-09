@@ -20,7 +20,7 @@ def create_app():
     application.config['CORS_HEADERS'] = 'Content-Type'
     application.config['DEBUG'] = True
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    application.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URI')
+    #application.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URI')
     class QuakeSchema(ma.Schema):
         class Meta:
             fields = ('id','longitude','latitude','depth','magnitude', 'place', 'time', 'felt')
