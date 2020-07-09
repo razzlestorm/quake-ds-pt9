@@ -5,8 +5,8 @@ from flask_cors import CORS, cross_origin
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 import folium
-from .functions import time_parser, EmergencyLookup
-from .models import db, Quake
+from functions import time_parser, EmergencyLookup
+from models import db, Quake
 import pandas as pd
 from sqlalchemy import exc
 import requests
@@ -15,23 +15,23 @@ import time
 
 def create_app():
     """Create and configure an instance of the Flask application"""
-    app = Flask(__name__)
-    cors = CORS(app)
-    ma = Marshmallow(app)
-    app.config['CORS_HEADERS'] = 'Content-Type'
-    app.config['DEBUG'] = True
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URI')
+    application = Flask(__name__)
+    cors = CORS(application)
+    ma = Marshmallow(application)
+    application.config['CORS_HEADERS'] = 'Content-Type'
+    application.config['DEBUG'] = True
+    application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    application.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URI')
     class QuakeSchema(ma.Schema):
         class Meta:
             fields = ('id','longitude','latitude','depth','magnitude', 'place', 'time', 'felt')
 
     quake_schema = QuakeSchema()
     quakes_schema = QuakeSchema(many=True)
-    db.init_app(app)
+    db.init_app(application)
     #migrate = Migrate(app, db)
 
-    @app.route('/grabquakes', methods=['POST', 'GET'])
+    @application.route('/grabquakes', methods=['POST', 'GET'])
     def grab_quakes():
 
         # This works best if it stays in this file, but consider moving to functions?
@@ -124,11 +124,11 @@ def create_app():
         return render_template('grabquakes.html', title='Home', quakes=Quake.query.all())
 
 
-    @app.route('/')
+    @application.route('/')
     def root():
         return render_template('base.html', title='Epicentral')
 
-    @app.route('/map', methods=['POST', 'GET'])
+    @application.route('/map', methods=['POST', 'GET'])
     def map():
 
         # Defines Folium map based on geojson data
@@ -146,7 +146,7 @@ def create_app():
         m.save('templates/map.html')
         return render_template('map.html', title='Map data got!')
 
-    @app.route('/getquakes', methods=['POST', 'GET'])
+    @application.route('/getquakes', methods=['POST', 'GET'])
     @cross_origin()
     def getquakes():
         '''
@@ -190,7 +190,7 @@ def create_app():
                         }
         return geojson
 
-    @app.route('/emergency/<city>')
+    @application.route('/emergency/<city>')
     def emergency(city):
         em = EmergencyLookup(city)
         em.find_site()
@@ -200,4 +200,8 @@ def create_app():
         else:
             return render_template('emergency.html', content=content, link=link)
 
-    return app
+    return application
+
+if __name__ == "__main__":
+
+    create_app().run()
