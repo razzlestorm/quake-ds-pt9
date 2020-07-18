@@ -6,6 +6,7 @@ from flask_marshmallow import Marshmallow
 import folium
 from functions import time_parser, EmergencyLookup
 from models import db, Quake
+import os
 import pandas as pd
 from sqlalchemy import exc
 import requests
@@ -20,7 +21,7 @@ def create_app():
     application.config['CORS_HEADERS'] = 'Content-Type'
     application.config['DEBUG'] = True
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    application.config['SQLALCHEMY_DATABASE_URI'] = config('DATABASE_URI')
+    application.config['SQLALCHEMY_DATABASE_URI'] =  os.environ['DATABASE_URI']
     class QuakeSchema(ma.Schema):
         class Meta:
             fields = ('id','longitude','latitude','depth','magnitude', 'place', 'time', 'felt')
